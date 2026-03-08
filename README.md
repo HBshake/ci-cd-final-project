@@ -1,38 +1,34 @@
-# CI/CD Tools and Practices Final Project Template
+# ci-cd-final-project
 
-This repository contains the template to be used for the Final Project for the Coursera course **CI/CD Tools and Practices**.
+## CI/CD Tools and Practices Final Project
 
-## Usage
+This project demonstrates a full CI/CD pipeline for a RESTful counter microservice using GitHub Actions and OpenShift Pipelines (Tekton).
 
-This repository is to be used as a template to create your own repository in your own GitHub account. No need to Fork it as it has been set up as a Template. This will avoid confusion when making Pull Requests in the future.
+## CI with GitHub Actions
 
-From the GitHub **Code** page, press the green **Use this template** button to create your own repository from this template.
+The `.github/workflows/workflow.yml` pipeline:
+- Triggers on push and pull requests to `main`
+- Runs on `ubuntu-latest` using `python:3.9-slim`
+- Steps: Checkout → Install dependencies → Lint (flake8) → Unit tests (nose)
 
-Name your repo: `ci-cd-final-project`.
+## CD with OpenShift Pipelines (Tekton)
 
-## Setup
+The `.tekton/tasks.yml` file defines:
+- **cleanup** – clears the workspace
+- **nose** – runs unit tests
 
-After entering the lab environment you will need to run the `setup.sh` script in the `./bin` folder to install the prerequisite software.
+The `.tekton/pipeline.yaml` defines the full CD pipeline:
+- init → clone → lint → tests → build → deploy
 
+## How to Run
+
+### GitHub Actions
+Push to `main` — the workflow triggers automatically.
+
+### OpenShift Pipeline
 ```bash
-bash bin/setup.sh
+kubectl apply -f .tekton/tasks.yml
+oc apply -f .tekton/pipeline.yaml
 ```
 
-Then you must exit the shell and start a new one for the Python virtual environment to be activated.
-
-```bash
-exit
-```
-
-## Tasks
-
-
-## License
-
-Licensed under the Apache License. See [LICENSE](/LICENSE)
-
-## Author
-
-Skills Network
-
-## <h3 align="center"> © IBM Corporation 2023. All rights reserved. <h3/>
+Then start the pipeline from the OpenShift console with your repo URL, branch, image, and app name.
